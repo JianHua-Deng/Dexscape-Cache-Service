@@ -35,7 +35,7 @@ const mangaCoversProxy = createProxyMiddleware({
         console.log('Proxying request:' + req.url);
     },
     onProxyRes: (proxyRes, req, res) => {
-        //proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
         console.log('Received response for:' + req.url);
     },
 
@@ -53,7 +53,7 @@ const mangaSearchProxy = createProxyMiddleware({
         console.log('Proxying request:' + req.url);
     },
     onProxyRes: (proxyRes, req, res) => {
-        //proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
         console.log('Received response for:' + req.url);
     },
 
