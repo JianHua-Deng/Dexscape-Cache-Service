@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import dotenv from 'dotenv';
+import morgan from 'morgan';
 import path from 'path';
 
 dotenv.config({path: './.env'})
@@ -13,12 +14,14 @@ app.use(cors());
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, 'dist')));
 
+/*
 app.use((req, res, next) => {
     console.log('Incoming request:', req.method, req.url);
     next();
 });
+*/
 
-
+app.use(morgan('dev'));
 
 const mangaCoversProxy = createProxyMiddleware({
     target: 'https://uploads.mangadex.org/covers/',
