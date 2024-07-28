@@ -20,6 +20,16 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use("/covers", (req, res, next) => {
+    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    next(); 
+  });
+
+  app.use("/manga", (req, res, next) => {
+    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    next(); 
+  });
+
 
 app.use(morgan('dev'));
 
@@ -32,7 +42,6 @@ const mangaCoversProxy = createProxyMiddleware({
     logLevel: 'debug',
     logger: console,
     onProxyReq: (proxyReq, req, res) => {
-        proxyReq.setHeader('User-Agent', 'Mangasite/1.0.0');
         console.log('Proxying request:' + req.url);
     },
     onProxyRes: (proxyRes, req, res) => {
@@ -51,7 +60,6 @@ const mangaSearchProxy = createProxyMiddleware({
     logLevel: 'debug',
     logger: console,
     onProxyReq: (proxyReq, req, res) => {
-        proxyReq.setHeader('User-Agent', 'Mangasite/1.0.0');
         console.log('Proxying request:' + req.url);
     },
     onProxyRes: (proxyRes, req, res) => {
