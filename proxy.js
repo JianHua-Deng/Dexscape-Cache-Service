@@ -21,12 +21,14 @@ app.use((req, res, next) => {
 });
 
 app.use("/covers", (req, res, next) => {
-    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    //req.headers = { "user-agent": "Mangasite/1.0.0" };
+    req.headers = {};
     next(); 
   });
 
   app.use("/manga", (req, res, next) => {
-    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    //req.headers = { "user-agent": "Mangasite/1.0.0" };
+    req.headers = {}
     next(); 
   });
 
