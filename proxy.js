@@ -41,13 +41,6 @@ const mangaCoversProxy = createProxyMiddleware({
     },
     logLevel: 'debug',
     logger: console,
-    onProxyReq: (proxyReq, req, res) => {
-        console.log('Proxying request:' + req.url);
-    },
-    onProxyRes: (proxyRes, req, res) => {
-
-        console.log('Received response for:' + req.url);
-    },
 
 });
 
@@ -59,13 +52,6 @@ const mangaSearchProxy = createProxyMiddleware({
     },
     logLevel: 'debug',
     logger: console,
-    onProxyReq: (proxyReq, req, res) => {
-        console.log('Proxying request:' + req.url);
-    },
-    onProxyRes: (proxyRes, req, res) => {
-
-        console.log('Received response for:' + req.url);
-    },
 
 })
 
