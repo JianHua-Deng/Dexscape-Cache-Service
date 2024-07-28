@@ -47,7 +47,6 @@ const mangaCoversProxy = createProxyMiddleware({
     onProxyRes: (proxyRes, req, res) => {
 
         console.log('Received response for:' + req.url);
-        proxyRes.pipe(res);
     },
 
 });
