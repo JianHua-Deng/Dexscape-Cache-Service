@@ -29,6 +29,7 @@ app.use("/covers", (req, res, next) => {
     next(); 
   });
 
+app.use(cors());
 
 app.use(morgan('dev'));
 
