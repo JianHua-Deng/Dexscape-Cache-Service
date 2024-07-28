@@ -20,6 +20,16 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use("/covers", (req, res, next) => {
+    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    next(); 
+  });
+
+  app.use("/manga", (req, res, next) => {
+    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    next(); 
+  });
+
 
 app.use(morgan('dev'));
 
