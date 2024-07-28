@@ -33,6 +33,13 @@ app.use("/covers", (req, res, next) => {
 
 app.use(morgan('dev'));
 
+const setHeaders = (proxyRes, req, res) => {
+    proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+    proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE';
+    proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type';
+    console.log('Received response for:' + req.url);
+};
+
 const mangaCoversProxy = createProxyMiddleware({
     target: 'https://uploads.mangadex.org/covers/',
     changeOrigin: true,
@@ -44,12 +51,7 @@ const mangaCoversProxy = createProxyMiddleware({
     onProxyReq: (proxyReq, req, res) => {
         console.log('Proxying request:' + req.url);
     },
-    onProxyRes: (proxyRes, req, res) => {
-        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-        proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE';
-        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type';
-        console.log('Received response for:' + req.url);
-    },
+    onProxyRes: setHeaders,
 
 });
 
@@ -64,12 +66,7 @@ const mangaSearchProxy = createProxyMiddleware({
     onProxyReq: (proxyReq, req, res) => {
         console.log('Proxying request:' + req.url);
     },
-    onProxyRes: (proxyRes, req, res) => {
-        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-        proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE';
-        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-        console.log('Received response for:' + req.url);
-    },
+    onProxyRes: setHeaders,
 
 })
 
