@@ -1,5 +1,5 @@
-import express from 'express'
-import cors from 'cors'
+import express from 'express';
+import cors from 'cors';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
@@ -9,7 +9,6 @@ dotenv.config({path: './.env'})
 
 const PORT = process.env.PORT || 3000;
 const app = express();
-app.use(cors());
 
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, 'dist')));
