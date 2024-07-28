@@ -21,14 +21,16 @@ app.use((req, res, next) => {
 });
 
 app.use("/covers", (req, res, next) => {
-    //req.headers = { "user-agent": "Mangasite/1.0.0" };
-    req.headers = {};
+    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    res.setHeader("Access-Control-Allow-Origin", "https://manga-site-5a35bcn5q-jianhua-dengs-projects.vercel.app/");
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type");
     next(); 
   });
 
   app.use("/manga", (req, res, next) => {
-    //req.headers = { "user-agent": "Mangasite/1.0.0" };
-    req.headers = {}
+    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type");
     next(); 
   });
 
