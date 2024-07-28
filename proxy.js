@@ -20,6 +20,16 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use("/covers", (req, res, next) => {
+    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    next(); 
+  });
+
+  app.use("/manga", (req, res, next) => {
+    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    next(); 
+  });
+
 
 app.use(morgan('dev'));
 
@@ -37,7 +47,7 @@ const mangaCoversProxy = createProxyMiddleware({
     onProxyRes: (proxyRes, req, res) => {
         proxyRes.headers['Access-Control-Allow-Origin'] = '*';
         proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE';
-        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type';
         console.log('Received response for:' + req.url);
     },
 
