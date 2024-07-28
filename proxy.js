@@ -36,9 +36,6 @@ app.use(morgan('dev'));
 const mangaCoversProxy = createProxyMiddleware({
     target: 'https://uploads.mangadex.org/covers/',
     changeOrigin: true,
-    pathRewrite: {
-        "^/covers": "/covers",
-    },
     logLevel: 'debug',
     logger: console,
 
@@ -47,9 +44,6 @@ const mangaCoversProxy = createProxyMiddleware({
 const mangaSearchProxy = createProxyMiddleware({
     target: 'https://api.mangadex.org/manga',
     changeOrigin: true,
-    pathRewrite: {
-        "^/manga": "/manga",
-    },
     logLevel: 'debug',
     logger: console,
 
