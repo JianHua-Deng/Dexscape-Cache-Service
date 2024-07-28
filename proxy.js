@@ -21,25 +21,15 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
-  });
-
-app.use("/covers", (req, res, next) => {
-    req.headers = { "user-agent": "Mangasite/1.0.0" };
-    next(); 
-  });
-
-  app.use("/manga", (req, res, next) => {
-    req.headers = { "user-agent": "Mangasite/1.0.0" };
-    next(); 
-  });
-
 
 app.use(morgan('dev'));
+
+const setHeaders = (proxyRes, req, res) => {
+    proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+    proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE';
+    proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type';
+    console.log('Received response for:' + req.url);
+};
 
 const mangaCoversProxy = createProxyMiddleware({
     target: 'https://uploads.mangadex.org/covers/',
@@ -50,14 +40,11 @@ const mangaCoversProxy = createProxyMiddleware({
     logLevel: 'debug',
     logger: console,
     onProxyReq: (proxyReq, req, res) => {
+        proxyReq.removeHeader('Origin');
+        proxyReq.removeHeader('Referer');
         console.log('Proxying request:' + req.url);
     },
-    onProxyRes: (proxyRes, req, res) => {
-        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-        proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE';
-        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type';
-        console.log('Received response for:' + req.url);
-    },
+    onProxyRes: setHeaders,
 
 });
 
@@ -70,14 +57,11 @@ const mangaSearchProxy = createProxyMiddleware({
     logLevel: 'debug',
     logger: console,
     onProxyReq: (proxyReq, req, res) => {
+        proxyReq.removeHeader('Origin');
+        proxyReq.removeHeader('Referer');
         console.log('Proxying request:' + req.url);
     },
-    onProxyRes: (proxyRes, req, res) => {
-        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-        proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE';
-        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-        console.log('Received response for:' + req.url);
-    },
+    onProxyRes: setHeaders,
 
 })
 
