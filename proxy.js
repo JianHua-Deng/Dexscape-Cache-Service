@@ -36,6 +36,8 @@ const mangaCoversProxy = createProxyMiddleware({
     },
     onProxyRes: (proxyRes, req, res) => {
         proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+        proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE';
+        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type'
         console.log('Received response for:' + req.url);
     },
 
@@ -54,6 +56,8 @@ const mangaSearchProxy = createProxyMiddleware({
     },
     onProxyRes: (proxyRes, req, res) => {
         proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+        proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE';
+        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type'
         console.log('Received response for:' + req.url);
     },
 
