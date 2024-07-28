@@ -22,15 +22,23 @@ app.use((req, res, next) => {
 
 app.use("/covers", (req, res, next) => {
     req.headers = { "user-agent": "Mangasite/1.0.0" };
-    res.setHeader("Access-Control-Allow-Origin", "https://manga-site-5a35bcn5q-jianhua-dengs-projects.vercel.app/");
-    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type");
+    if (req.headers.referer) {
+        delete req.headers.referer; // Remove the referer header
+      }
+      if (req.headers.origin) {
+        delete req.headers.origin; // Remove the origin header
+      }
     next(); 
   });
 
   app.use("/manga", (req, res, next) => {
     req.headers = { "user-agent": "Mangasite/1.0.0" };
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type");
+    if (req.headers.referer) {
+        delete req.headers.referer; // Remove the referer header
+      }
+      if (req.headers.origin) {
+        delete req.headers.origin; // Remove the origin header
+      }
     next(); 
   });
 
