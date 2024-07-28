@@ -65,6 +65,13 @@ const mangaSearchProxy = createProxyMiddleware({
 
 })
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://manga-site-5a35bcn5q-jianhua-dengs-projects.vercel.app/');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    next();
+  });
+
 app.use('/manga', mangaSearchProxy);
 app.use('/covers', mangaCoversProxy);
 
