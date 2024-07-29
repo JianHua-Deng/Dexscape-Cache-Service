@@ -9,8 +9,17 @@ dotenv.config({path: './.env'})
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, 'dist')));
+//removing headers except user-agent, didn't work if I don't include user-agent
+app.use("/covers", (req, res, next) => {
+    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    next(); 
+  });
+
+  app.use("/manga", (req, res, next) => {
+    req.headers = { "user-agent": "Mangasite/1.0.0" };
+    next(); 
+  });
+
 
 const mangaCoversProxy = createProxyMiddleware({
     target: 'https://uploads.mangadex.org/covers/',
@@ -34,23 +43,15 @@ app.use((req, res, next) => {
     next();
 });
 
-//removing headers except user-agent, didn't work if I don't include user-agent
-app.use("/covers", (req, res, next) => {
-    req.headers = { "user-agent": "Mangasite/1.0.0" };
-    next(); 
-  });
-
-  app.use("/manga", (req, res, next) => {
-    req.headers = { "user-agent": "Mangasite/1.0.0" };
-    next(); 
-  });
-
 app.use(cors());
 
 app.use(morgan('dev'));
 
 app.use('/manga', mangaSearchProxy);
 app.use('/covers', mangaCoversProxy);
+
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, 'dist')));
 
 
 app.listen(PORT, () => {
