@@ -9,6 +9,12 @@ dotenv.config({path: './.env'})
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+  });
+
 //removing headers except user-agent, didn't work if I don't include user-agent
 app.use("/covers", (req, res, next) => {
     req.headers = { "user-agent": "Mangasite/1.0.0" };
