@@ -34,7 +34,7 @@ const mangaCoversProxy = createProxyMiddleware({
     logLevel: 'debug',
     logger: console,
     onProxyRes: (proxyRes, req, res) => {
-      res.header('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Origin', '*');
     }
 
 });
@@ -45,7 +45,7 @@ const mangaSearchProxy = createProxyMiddleware({
     logLevel: 'debug',
     logger: console,
     onProxyRes: (proxyRes, req, res) => {
-      res.header('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Origin', '*');
     }
 
 });
@@ -56,7 +56,7 @@ const chapterMetaDataProxy = createProxyMiddleware({
   logLevel: 'debug',
   logger: console,
   onProxyRes: (proxyRes, req, res) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', '*');
   } 
 });
 
@@ -78,7 +78,7 @@ const chapterImageProxy = createProxyMiddleware({
     return path.replace(/^.*(?=\/data)/, "");
   },
   onProxyRes: (proxyRes, req, res) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', '*');
   }  
 
 });
