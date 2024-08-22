@@ -10,13 +10,13 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
 
-/*
+
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
-*/
+
 
 //removing headers except user-agent, didn't work if I don't include user-agent
 app.use("/covers", (req, res, next) => {
@@ -35,6 +35,12 @@ const mangaCoversProxy = createProxyMiddleware({
     changeOrigin: true,
     logLevel: 'debug',
     logger: console,
+    on: {
+      proxyRes: (proxyRes, req, res) => {
+        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+        proxyRes.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept';
+      },
+    }
 
 });
 
@@ -43,6 +49,12 @@ const mangaSearchProxy = createProxyMiddleware({
     changeOrigin: true,
     logLevel: 'debug',
     logger: console,
+    on: {
+      proxyRes: (proxyRes, req, res) => {
+        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+        proxyRes.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept';
+      },
+    }
 
 });
 
@@ -51,6 +63,12 @@ const chapterMetaDataProxy = createProxyMiddleware({
   changeOrigin: true,
   logLevel: 'debug',
   logger: console,
+  on: {
+    proxyRes: (proxyRes, req, res) => {
+      proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+      proxyRes.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept';
+    },
+  }
 
 });
 
@@ -71,6 +89,13 @@ const chapterImageProxy = createProxyMiddleware({
     // Empty out anything before /data, and take that as the path
     return path.replace(/^.*(?=\/data)/, "");
   },
+
+  on: {
+    proxyRes: (proxyRes, req, res) => {
+      proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+      proxyRes.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept';
+    },
+  }
 
 });
 
