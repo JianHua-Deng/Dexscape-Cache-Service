@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import {createProxyMiddleware} from 'http-proxy-middleware';
+import {createProxyMiddleware, responseInterceptor} from 'http-proxy-middleware';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import path from 'path';
@@ -10,94 +10,77 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
 
-
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    console.log("Res Headers: " + res.getHeaders());
-    next();
-});
-
-
-//removing headers except user-agent, didn't work if I don't include user-agent
-app.use("/covers", (req, res, next) => {
-    req.headers = { "user-agent": "Mangasite/1.0.0" };
-    next(); 
-  });
-
-app.use("/manga", (req, res, next) => {
-  req.headers = { "user-agent": "Mangasite/1.0.0" };
-  next(); 
-});
-
-
-const mangaCoversProxy = createProxyMiddleware({
-    target: 'https://uploads.mangadex.org/covers/',
+function createMangadexProxy({target, pathRewrite, customRouter}){
+  return createProxyMiddleware({
+    target: target,
     changeOrigin: true,
+    selfHandleResponse: true,
+    router: customRouter,
+    pathRewrite: pathRewrite,
+
     logLevel: 'debug',
     logger: console,
+
     on: {
-      proxyRes: (proxyRes, req, res) => {
-        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-        proxyRes.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept';
+      proxyReq: (proxyReq, req, res) => {
+        proxyReq.removeHeader('via');
       },
-    }
+      
+      proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
 
-});
-
-const mangaSearchProxy = createProxyMiddleware({
-    target: 'https://api.mangadex.org/manga',
-    changeOrigin: true,
-    logLevel: 'debug',
-    logger: console,
-    on: {
-      proxyRes: (proxyRes, req, res) => {
-        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-        proxyRes.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept';
-      },
-    }
-
-});
-
-const chapterMetaDataProxy = createProxyMiddleware({
-  target: 'https://api.mangadex.org/at-home/',
-  changeOrigin: true,
-  logLevel: 'debug',
-  logger: console,
-  on: {
-    proxyRes: (proxyRes, req, res) => {
-      proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-      proxyRes.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept';
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        return responseBuffer;    
+      })
     },
-  }
 
+    
+
+  });
+}
+
+/**
+ * Covers Proxy
+ * /covers -> https://uploads.mangadex.org/covers
+ */
+const mangaCoversProxy = createMangadexProxy({
+  target: 'https://uploads.mangadex.org/covers',
 });
 
-const chapterImageProxy = createProxyMiddleware({
+/**
+ * Manga search proxy
+ * /manga -> https://api.mangadex.org/manga
+ */
+const mangaSearchProxy = createMangadexProxy({
+  target: 'https://api.mangadex.org/manga',
+});
+
+/**
+ * Chapter MetaData
+ * /at-home -> https://api.mangadex.org/at-home
+ */
+const chapterMetaDataProxy = createMangadexProxy({
+  target: 'https://api.mangadex.org/at-home',
+});
+
+/**
+ * Chapter Image
+ * Custom router logic for rewriting baseUrl from the request path
+ */
+const chapterImageProxy = createMangadexProxy({
   target: 'https://uploads.mangadex.org',
-  changeOrigin: true,
-  logLevel: 'debug',
-  logger: console,
-  router: (req) => {
-    const baseUrl = req.url.match(/(?<=https?:\/\/)[^\/]+(?=\/data)/); // Matching the baseUrl and only the baseUrl from the request
-    if (baseUrl){
-      //console.log(`Original URL: ${req.url}, BaseUrl: ${baseUrl}`);
-      return baseUrl.includes('https://') ? `${baseUrl}` : `https://${baseUrl}`;
+  customRouter: (req) => {
+    console.log(req.url);
+    const baseUrl = req.url.match(/(?<=https?:\/\/)[^/]+(?=\/data)/); // Matching the baseUrl and only the baseUrl from the request
+    if (baseUrl) {
+      return `https://${baseUrl}`;
     }
     return 'https://uploads.mangadex.org';
   },
   pathRewrite: (path, req) => {
     // Empty out anything before /data, and take that as the path
-    return path.replace(/^.*(?=\/data)/, "");
+    return path.replace(/^.*(?=\/data)/, '');
   },
-
-  on: {
-    proxyRes: (proxyRes, req, res) => {
-      proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-      proxyRes.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept';
-    },
-  }
-
 });
 
 app.use('/manga', mangaSearchProxy);
