@@ -30,7 +30,7 @@ function createMangadexProxy({target, pathRewrite, customRouter}){
       proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        console.log(`Response Interceptor, Calling me now, Access-Control-Allow-Origin is set to: ${res.getHeader('Access-Control-Allow-Origin')}`);
+        //console.log(`Response Interceptor, Calling me now, Access-Control-Allow-Origin is set to: ${res.getHeader('Access-Control-Allow-Origin')}`);
         return responseBuffer;    
       })
     },
@@ -49,12 +49,24 @@ const mangaCoversProxy = createMangadexProxy({
 });
 
 /**
- * Manga search proxy
- * /manga -> https://api.mangadex.org/manga
+ * Note that express automatically strips the initial matching prefix from the request path
+ * For example: Requesting -> /mangaList/manga?<searchParameters> Ends up with -> /manga?<searchParameters>
+ */
+
+/**
+ * Proxy for searching list of Mangas
+ * /mangaList/manga?<searchParameters> -> https://api.mangadex.org/manga?<searchParameters>
+ */
+const mangaListProxy = createMangadexProxy({
+  target: 'https://api.mangadex.org',
+});
+
+/**
+ * Proxy for specific Manga search
+ * /manga/<mangaId> -> https://api.mangadex.org/manga/<mangaId>
  */
 const mangaSearchProxy = createMangadexProxy({
-  target: 'https://api.mangadex.org/manga',
-  pathRewrite: {'^/manga': ''},
+  target: 'https://api.mangadex.org/manga/',
 });
 
 /**
@@ -85,6 +97,7 @@ const chapterImageProxy = createMangadexProxy({
   },
 });
 
+app.use('/mangaList', mangaListProxy);
 app.use('/manga', mangaSearchProxy);
 app.use('/covers', mangaCoversProxy);
 app.use('/at-home', chapterMetaDataProxy);
