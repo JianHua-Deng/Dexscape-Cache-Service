@@ -23,7 +23,7 @@ function createMangadexProxy({target, pathRewrite, customRouter}){
 
     on: {
       proxyReq: (proxyReq, req, res) => {
-        proxyReq.removeHeader('via');
+        proxyReq.headers = { "user-agent": "MangaDex Proxy/1.0.0" };
       },
       
       proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
@@ -96,7 +96,7 @@ const chapterImageProxy = createMangadexProxy({
   },
 });
 
-
+/*
 app.use("/covers", (req, res, next) => {
   req.headers = { "user-agent": "MangaDex Proxy/1.0.0" };
   next(); 
@@ -106,7 +106,7 @@ app.use("/chapter-image", (req, res, next) => {
   req.headers = { "user-agent": "MangaDex Proxy/1.0.0" };
   next(); 
 });
-
+*/
 
 app.use('/mangaList', mangaListProxy);
 app.use('/manga', mangaSearchProxy);
