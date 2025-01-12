@@ -22,10 +22,6 @@ function createMangadexProxy({target, pathRewrite, customRouter}){
     logger: console,
 
     on: {
-      proxyReq: (proxyReq, req, res) => {
-        req.headers = { "user-agent": "MangaDex Proxy/1.0.0" };
-      },
-      
       proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -33,9 +29,6 @@ function createMangadexProxy({target, pathRewrite, customRouter}){
         return responseBuffer;    
       })
     },
-
-    
-
   });
 }
 
@@ -96,7 +89,7 @@ const chapterImageProxy = createMangadexProxy({
   },
 });
 
-/*
+// These are necessary to set the user-agent header for the request, otherwise it will return mangadex's default wrong image
 app.use("/covers", (req, res, next) => {
   req.headers = { "user-agent": "MangaDex Proxy/1.0.0" };
   next(); 
@@ -106,8 +99,8 @@ app.use("/chapter-image", (req, res, next) => {
   req.headers = { "user-agent": "MangaDex Proxy/1.0.0" };
   next(); 
 });
-*/
 
+// Setting proxy middlewares
 app.use('/mangaList', mangaListProxy);
 app.use('/manga', mangaSearchProxy);
 app.use('/covers', mangaCoversProxy);
