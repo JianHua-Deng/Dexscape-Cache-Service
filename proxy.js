@@ -14,21 +14,11 @@ function createMangadexProxy({target, pathRewrite, customRouter}){
   return createProxyMiddleware({
     target: target,
     changeOrigin: true,
-    selfHandleResponse: true,
     router: customRouter,
     pathRewrite: pathRewrite,
 
     logLevel: 'debug',
     logger: console,
-
-    on: {
-      proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        //console.log(`Response Interceptor, Calling me now, Access-Control-Allow-Origin is set to: ${res.getHeader('Access-Control-Allow-Origin')}`);
-        return responseBuffer;    
-      })
-    },
   });
 }
 
