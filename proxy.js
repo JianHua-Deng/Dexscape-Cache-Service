@@ -23,7 +23,7 @@ function createMangadexProxy({target, pathRewrite, customRouter}){
 
     on: {
       proxyReq: (proxyReq, req, res) => {
-        proxyReq.headers = { "user-agent": "MangaDex Proxy/1.0.0" };
+        req.headers = { "user-agent": "MangaDex Proxy/1.0.0" };
       },
       
       proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
