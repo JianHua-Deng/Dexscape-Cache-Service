@@ -22,6 +22,7 @@ function createMangadexProxy({target, pathRewrite, customRouter}){
   });
 }
 
+// These are necessary to set the user-agent header for the request, otherwise it will return mangadex's default wrong image
 // Middleware to remove/override extra headers
 function cleanHeaders(req, res, next) {
   // Use a custom user-agent that Mangadex likes
@@ -87,17 +88,6 @@ const chapterImageProxy = createMangadexProxy({
     // Empty out anything before /data, and take that as the path
     return path.replace(/^.*(?=\/data)/, '');
   },
-});
-
-// These are necessary to set the user-agent header for the request, otherwise it will return mangadex's default wrong image
-app.use("/covers", (req, res, next) => {
-  req.headers = { "user-agent": "MangaDex Proxy/1.0.0" };
-  next(); 
-});
-
-app.use("/chapter-image", (req, res, next) => {
-  req.headers = { "user-agent": "MangaDex Proxy/1.0.0" };
-  next(); 
 });
 
 // Setting proxy middlewares
