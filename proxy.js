@@ -22,6 +22,16 @@ function createMangadexProxy({target, pathRewrite, customRouter}){
   });
 }
 
+// Middleware to remove/override extra headers
+function cleanHeaders(req, res, next) {
+  // Use a custom user-agent that Mangadex likes
+  req.headers['user-agent'] = 'MangaDex Proxy/1.0.0';
+  // Remove headers that might cause issues
+  delete req.headers.referer;
+  delete req.headers.origin;
+  next();
+}
+
 /**
  * Covers Proxy
  * /covers -> https://uploads.mangadex.org/covers
@@ -91,11 +101,11 @@ app.use("/chapter-image", (req, res, next) => {
 });
 
 // Setting proxy middlewares
-app.use('/mangaList', mangaListProxy);
-app.use('/manga', mangaSearchProxy);
-app.use('/covers', mangaCoversProxy);
-app.use('/at-home', chapterMetaDataProxy);
-app.use('/chapter-image', chapterImageProxy);
+app.use('/mangaList', cleanHeaders, mangaListProxy);
+app.use('/manga', cleanHeaders, mangaSearchProxy);
+app.use('/covers', cleanHeaders, mangaCoversProxy);
+app.use('/at-home', cleanHeaders, chapterMetaDataProxy);
+app.use('/chapter-image', cleanHeaders, chapterImageProxy);
 
 
 app.listen(PORT, () => {
