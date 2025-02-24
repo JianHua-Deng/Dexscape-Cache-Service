@@ -70,6 +70,10 @@ const chapterMetaDataProxy = createMangadexProxy({
   target: 'https://api.mangadex.org/at-home',
 });
 
+const chapterInfoProxy = createMangadexProxy({
+  target: 'https://api.mangadex.org/chapter'
+})
+
 /**
  * Chapter Image
  * Custom router logic for rewriting baseUrl from the request path
@@ -95,6 +99,7 @@ app.use('/mangaList', cleanHeaders, mangaListProxy);
 app.use('/manga', cleanHeaders, mangaSearchProxy);
 app.use('/covers', cleanHeaders, mangaCoversProxy);
 app.use('/at-home', cleanHeaders, chapterMetaDataProxy);
+app.use('/chapter', cleanHeaders, chapterInfoProxy);
 app.use('/chapter-image', cleanHeaders, chapterImageProxy);
 
 
