@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "Mangadex-Proxy-Server",
   "type": "module",
-  "main": "proxy.js",
+  "main": "dist/app.js",
   "scripts": {
-    "start": "node proxy.js"
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "dev": "ts-node src/app.ts"
   },
   "keywords": [],
   "author": "",
@@ -16,13 +18,17 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "http-proxy-middleware": "^3.0.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.4",
-    "updates": "^16.4.1",
-    "http-proxy-middleware": "^3.0.0"
-    
+    "updates": "^16.4.1"
   },
   "devDependencies": {
-    
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.13.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   }
 }
