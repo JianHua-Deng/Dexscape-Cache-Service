@@ -1,16 +1,7 @@
 {
-  "ts-node": {
-    "transpileOnly": true,
-    "compilerOptions": {
-      "module": "ESNext",
-      "esModuleInterop": true
-    },
-    "esm": true
-  },
   "compilerOptions": {
-    "target": "es2016",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "target": "ES6",
+    "module": "CommonJS",
     "rootDir": "src",
     "outDir": "dist",
     "allowSyntheticDefaultImports": true,

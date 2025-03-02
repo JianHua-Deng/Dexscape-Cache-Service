@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import dotenv from 'dotenv';
+import { coverImageCacheMiddleware, chapterImageCacheMiddleware } from './middleware/cache-middleware.js';
 dotenv.config({ path: './.env' });
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const app = express();
@@ -58,9 +59,8 @@ const chapterInfoProxy = createMangadexProxy({
 const chapterImageProxy = createMangadexProxy({
     target: 'https://uploads.mangadex.org',
     customRouter: (req) => {
-        var _a;
         console.log(req.url);
-        const match = (_a = req.url) === null || _a === void 0 ? void 0 : _a.match(/(?<=https?:\/\/)[^/]+(?=\/data)/);
+        const match = req.url?.match(/(?<=https?:\/\/)[^/]+(?=\/data)/); // This extract the domain url we get from mangadex
         return match ? `https://${match[0]}` : 'https://uploads.mangadex.org';
     },
     pathRewrite: (path, req) => {
@@ -70,10 +70,12 @@ const chapterImageProxy = createMangadexProxy({
 // Setting up proxy middlewares
 app.use('/mangaList', cleanHeaders, mangaListProxy);
 app.use('/manga', cleanHeaders, mangaSearchProxy);
-app.use('/covers', cleanHeaders, mangaCoversProxy);
+//app.use('/covers', cleanHeaders, mangaCoversProxy);
+app.use('/covers', cleanHeaders, coverImageCacheMiddleware(), mangaCoversProxy);
 app.use('/at-home', cleanHeaders, chapterMetaDataProxy);
 app.use('/chapter', cleanHeaders, chapterInfoProxy);
-app.use('/chapter-image', cleanHeaders, chapterImageProxy);
+//app.use('/chapter-image', cleanHeaders, chapterImageProxy);
+app.use('/chapter-image', cleanHeaders, chapterImageCacheMiddleware(), chapterImageProxy);
 app.listen(PORT, () => {
     console.log("It is currently running on PORT: " + PORT);
 });
