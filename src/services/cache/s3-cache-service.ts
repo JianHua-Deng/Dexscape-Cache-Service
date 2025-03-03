@@ -2,12 +2,7 @@ import { s3Client, S3_BUCKET_NAME, CACHE_TTL } from "../aws-config";
 import { CacheOptions } from "../../utils/types";
 import { generateS3ImageKey } from "../../utils/utils";
 import axios from 'axios';
-import { 
-  HeadObjectCommand, 
-  GetObjectCommand, 
-  PutObjectCommand, 
-  DeleteObjectCommand 
-} from '@aws-sdk/client-s3';
+import { HeadObjectCommand, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Readable } from 'stream';
 
@@ -53,7 +48,7 @@ export class S3ImageCache {
   }
   
   // Cache an image in S3 bucket
-  async cacheImage(url: string, options: CacheOptions = {}): Promise<string | null> {
+  async cacheImage(url: string): Promise<string | null> {
     try {
       const key = generateS3ImageKey(url);
 
@@ -72,7 +67,7 @@ export class S3ImageCache {
         Key: key,
         Body: response.data,
         ContentType: contentType,
-        CacheControl: `max-age=${options.ttl || CACHE_TTL}`,
+        CacheControl: `max-age=${CACHE_TTL}`,
       });
 
       await s3Client.send(command);

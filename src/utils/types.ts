@@ -1,7 +1,8 @@
 export interface CacheItem {
   key: string;
   data: any;
-  expiresAt: number;
+  createdAt: string;
+  ttl: number;
 }
 
 export interface CacheOptions {

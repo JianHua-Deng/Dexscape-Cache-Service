@@ -1,5 +1,6 @@
 
 import { S3Client } from '@aws-sdk/client-s3';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -12,7 +13,7 @@ const config = {
   },
 };
 
-//export const dynamoDB = new DynamoDB.DocumentClient(config);
+export const dynamoDBClient = new DynamoDBClient(config);
 export const s3Client = new S3Client(config);
 
 // Export constants
