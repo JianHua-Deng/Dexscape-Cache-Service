@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import cacheService from '../services/cache-service';
 import { CACHE_TTL } from '../services/aws-config';
 import { NestedFilter } from 'aws-sdk/clients/quicksight';
+import { matchChapterImageDomain, stripBeforeData } from '../utils/utils';
 
 export function isCacheAble(req: Request): boolean {
   if (req.method !== 'GET'){
@@ -24,13 +25,16 @@ export async function coverImageCacheMiddleware(req: Request, res: Response, nex
     const coverUrl = `https://uploads.mangadex.org/covers${req.url}`;
 
     // Get or cache the image
-    const cachedImageUrl = await cacheService.getOrCacheImage(coverUrl);
+    const cachedImageUrl = await cacheService.getImageUrl(coverUrl);
 
     // Redirect to the cached image URL
-    if (cachedImageUrl !== coverUrl) {
+    if (cachedImageUrl && cachedImageUrl !== coverUrl) {
       console.log(`Finished fetching cover from S3 Bucket. Url: ${cachedImageUrl}`)
       return res.redirect(cachedImageUrl);
     }
+      
+    //console.log("Cover image doesn't exist in S3 Bucket, continuing to proxy");
+
 
     next();
 
@@ -52,24 +56,26 @@ export async function chapterImageCacheMiddleware(req: Request, res: Response, n
   }
 
   try {
-    const mangadexDomainUrl = req.url.match(/(?<=https?:\/\/)[^/]+(?=\/data)/); // Extract the domain that we get from Mangadex
+    const mangadexDomainUrl = matchChapterImageDomain(req); // Extract the domain that we get from Mangadex
+    const path = stripBeforeData(req.url);
     if (!mangadexDomainUrl) {
       return next();
     }
 
-    const originalImageUrl = `https://${mangadexDomainUrl[0]}${req.url.replace(/^.*(?=\/data)/, '')}`;
+    const mangadexImageUrl = `${mangadexDomainUrl}${path}`;
+    //console.log(`OriginalImageUrl: ${originalImageUrl}`);
 
     // Get or cache the image
-    const cachedImageUrl = await cacheService.getOrCacheImage(originalImageUrl);
+    const cachedImageUrl = await cacheService.getImageUrl(mangadexImageUrl);
 
     // Redirect to the cached image URL
-    if (cachedImageUrl !== originalImageUrl) {
+    if (cachedImageUrl && cachedImageUrl !== mangadexImageUrl) {
       console.log(`Finished fetching chapter-image from S3 Bucket. Url: ${cachedImageUrl}`);
       return res.redirect(cachedImageUrl);
     }
     
     // If we couldn't cache, continue to proxy
-    console.log("Somehow couldn't cache it, proceeding to proxy middleware")
+    //console.log("Chapter image doesn't exist in S3 Bucket, continuing to proxy");
     next();
 
   } catch (error) {
@@ -81,7 +87,6 @@ export async function chapterImageCacheMiddleware(req: Request, res: Response, n
 
 
 export async function jsonCacheMiddleware(req: Request, res: Response, next: NextFunction) {
-  console.log("Running Json middleware");
   if (!isCacheAble(req)) {
     console.log("Json not cachable, returning");
     return next();
@@ -92,7 +97,7 @@ export async function jsonCacheMiddleware(req: Request, res: Response, next: Nex
     // Since we can't directly get the full url from the req object, we can concat it
     // Using the url as the key
     const fullUrl = req.url; // `${req.protocol}://${req.get('host')}${req.originalUrl}`
-    console.log(`Finding cached data of url: ${fullUrl}`);
+    //console.log(`Finding cached data for the url: ${fullUrl}`);
     const cachedData = await cacheService.getJsonData(fullUrl);
 
     if(cachedData) {
@@ -101,30 +106,7 @@ export async function jsonCacheMiddleware(req: Request, res: Response, next: Nex
       return;
     }
 
-    // Now since there are no cached json responses stored in DynamoDB
-    // We are going to change the res.send function since it's mutable
-    // This is so that we can move on to the next middleware, which actually fetches from Mangadex
-    // But since we changed the res.send function, we essentially intercepted the response
-    // And it will cache the response before actually sending the response back to the client side
-
-    // Store the original send method
-    /*
-    const originalSend = res.send;
-
-    res.send = function(body: any): Response {
-      try {
-        console.log("Intercepted response");
-        const data = typeof body === 'string' ? JSON.parse(body) : body;
-        cacheService.cacheJsonData(fullUrl, data);
-      } catch (error) {
-        console.error("Error when intercepting JSON response", error);
-      }
-
-      return originalSend.call(this, body);
-      
-    }
-    */
-    console.log("No cache found in DynamoDB, proceeding to next middleware");
+    //console.log("No cache found in DynamoDB, proceeding to proxy middleware");
     next();
 
   } catch (error) {

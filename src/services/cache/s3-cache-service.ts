@@ -48,33 +48,26 @@ export class S3ImageCache {
   }
   
   // Cache an image in S3 bucket
-  async cacheImage(url: string): Promise<string | null> {
+  async cacheImage(url: string, responseBuffer: Buffer, contentType: string): Promise<void> {
     try {
       const key = generateS3ImageKey(url);
-
-      const response = await axios({
-        method: 'GET',
-        url: url,
-        responseType: 'arraybuffer',
-      });
-
-      // Get content type from the response if available
-      const contentType = response.headers['content-type'] || 'image/jpeg';
+      //console.log(`Storing image Key: ${key}` );
 
       // Upload to s3 bucket
       const command = new PutObjectCommand({
         Bucket: S3_BUCKET_NAME,
         Key: key,
-        Body: response.data,
+        Body: responseBuffer,
         ContentType: contentType,
         CacheControl: `max-age=${CACHE_TTL}`,
       });
 
       await s3Client.send(command);
-      return this.getUrl(url);
+      return;
+
     } catch (error) {
       console.error('Error caching image to S3:', error);
-      return null;
+      return;
     }
   }
 

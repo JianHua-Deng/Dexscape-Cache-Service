@@ -10,14 +10,14 @@ export class DynamoDBCache {
 
     try {
       const cacheKey = generateCacheKey(key);
-      console.log(`Cache Key: ${cacheKey}`);
+      //console.log(`Cache Key: ${cacheKey}`);
       const command = new GetCommand({
         TableName: DYNAMODB_TABLE_NAME,
         Key: { key: cacheKey },
       });
 
       const result = await dynamoDBClient.send(command);
-      console.log(result);
+      //console.log(result);
 
       // Check if an item was found
       if (!result || !result.Item) {
