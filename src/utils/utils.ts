@@ -16,7 +16,8 @@ export function isCacheValid(expiresAt: number): boolean {
 }
 
 export function getExpirationTime(ttl: number = CACHE_TTL): number {
-  return Date.now() + (ttl * 1000);
+  // Current seconds + ttl = expireTime
+  return Math.floor(Date.now() / 1000) + ttl; // Turning it into unix timestamp in seconds
 }
 
 // Extract the dyanmic domain we get from Mangadex for chapter image

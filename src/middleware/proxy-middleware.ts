@@ -68,7 +68,7 @@ export function createMangadexJsonProxy({ target, pathRewrite, customRouter }: M
           const data = JSON.parse(responseText);
           await cacheService.cacheJsonData(fullUrl, data);
 
-          console.log("Cache complete, returning Mangadex's response to client");
+          console.log("Json response Cached, returning Mangadex's response to client");
           return responseText;
 
         } catch (error) {
