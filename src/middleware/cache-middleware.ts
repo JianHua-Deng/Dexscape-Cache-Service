@@ -29,7 +29,7 @@ export async function coverImageCacheMiddleware(req: Request, res: Response, nex
 
     // Redirect to the cached image URL
     if (cachedImageUrl && cachedImageUrl !== coverUrl) {
-      console.log(`Finished fetching cover from S3 Bucket. Url: ${cachedImageUrl}`)
+      console.log(`Finished fetching cover from Cloudfront. Url: ${cachedImageUrl}`)
       return res.redirect(cachedImageUrl);
     }
       
@@ -70,7 +70,7 @@ export async function chapterImageCacheMiddleware(req: Request, res: Response, n
 
     // Redirect to the cached image URL
     if (cachedImageUrl && cachedImageUrl !== mangadexImageUrl) {
-      console.log(`Finished fetching chapter-image from S3 Bucket. Url: ${cachedImageUrl}`);
+      console.log(`Finished fetching chapter-image from Cloudfront. Url: ${cachedImageUrl}`);
       return res.redirect(cachedImageUrl);
     }
     

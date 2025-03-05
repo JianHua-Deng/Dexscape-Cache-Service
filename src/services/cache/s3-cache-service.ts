@@ -38,7 +38,7 @@ export class S3ImageCache {
       return cloudfrontAccessUrl;
 
     } catch (error) {
-      console.error(`Error getting image from S3 bucket`, error);
+      console.error(`Error getting image from Cloudfront`, error);
       return null;
     }
   }
@@ -62,7 +62,7 @@ export class S3ImageCache {
       return;
 
     } catch (error) {
-      console.error('Error caching image to S3:', error);
+      console.error('Error caching image to S3 Bucket:', error);
       return;
     }
   }
