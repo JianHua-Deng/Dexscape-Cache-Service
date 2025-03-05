@@ -1,4 +1,4 @@
-import { s3Client, S3_BUCKET_NAME, CACHE_TTL } from "../aws-config";
+import { s3Client, S3_BUCKET_NAME, CLOUDFRONT_DOMAIN, CACHE_TTL } from "../aws-config";
 import { CacheOptions } from "../../utils/types";
 import { generateS3ImageKey } from "../../utils/utils";
 import axios from 'axios';
@@ -34,13 +34,9 @@ export class S3ImageCache {
         return null;
       }
 
-      const command = new GetObjectCommand({
-        Bucket: S3_BUCKET_NAME,
-        Key: key,
-      });
+      const cloudfrontAccessUrl = `https://${CLOUDFRONT_DOMAIN}/${key}`;
+      return cloudfrontAccessUrl;
 
-      const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: expiry });
-      return signedUrl;
     } catch (error) {
       console.error(`Error getting image from S3 bucket`, error);
       return null;

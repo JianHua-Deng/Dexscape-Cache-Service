@@ -17,6 +17,7 @@ export const dynamoDBClient = new DynamoDBClient(config);
 export const s3Client = new S3Client(config);
 
 // Export constants
+export const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN
 export const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME as string;
 export const DYNAMODB_TABLE_NAME = process.env.DYNAMODB_TABLE_NAME as string;
 
