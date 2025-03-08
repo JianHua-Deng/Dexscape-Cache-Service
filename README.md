@@ -1,6 +1,6 @@
 # Dexscape-Caching-Service
 
-**Dexscape-Caching-Service** is a Node.js/TypeScript based caching proxy for MangaDex and is used for my Dexscape project. It intercepts requests for MangaDex images and JSON data, caches the images in an Amazon S3 bucket, caches JSON responses in Amazon DynamoDB, and serves proxied contents or from S3 bucket through CloudFront for fast and reliable delivery.
+**Dexscape-Caching-Service** is a Node.js/TypeScript based caching proxy for MangaDex and is used for my Dexscape project. It intercepts requests for MangaDex images and JSON data, caches the images in an Amazon S3 bucket, caches JSON responses in Amazon DynamoDB, and serves cached contents from S3 bucket through CloudFront for fast and reliable delivery.
 
 ## Features
 
