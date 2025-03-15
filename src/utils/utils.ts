@@ -48,7 +48,8 @@ export function generateS3ImageKey(url: string): string {
 
     // create a structured path based on endpoint
     if (urlPath.includes('/covers/')) {
-      return `covers/${path.basename(urlPath)}`;
+      const paths = urlPath.split('/'); //['', 'cover', 'mangaID', 'coverID']
+      return `covers/${paths[2]}/${paths[3]}`;
 
     } else if (urlPath.includes('/data/')) {
       // for chapter images, preserve more of the path strucutre
