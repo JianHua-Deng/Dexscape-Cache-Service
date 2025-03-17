@@ -1,12 +1,9 @@
 import express, { response } from 'express';
 import cors from 'cors';
-import { createProxyMiddleware, RequestHandler, Options, responseInterceptor } from 'http-proxy-middleware';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import dotenv from 'dotenv';
-import morgan from 'morgan';
-import path from 'path';
 import { IncomingMessage } from 'http';
 import { coverImageCacheMiddleware, chapterImageCacheMiddleware, jsonCacheMiddleware } from './middleware/cache-middleware';
-import cacheService from './services/cache-service';
 import { matchChapterImageDomain, stripBeforeData } from './utils/utils';
 import { createMangadexImageProxy, createMangadexJsonProxy } from './middleware/proxy-middleware';
 
@@ -24,6 +21,17 @@ function cleanHeaders(req: express.Request, res: express.Response, next: express
   delete req.headers.origin;
   next();
 }
+
+/**
+ * Proxy for checking Mangadex server's health
+ */
+
+const mangadexHealthProxy = createProxyMiddleware({
+  target: 'https://api.mangadex.org',
+  pathRewrite: {'^/' : '/ping'},
+  changeOrigin: true,
+  logger: console,
+});
 
 /**
  * Proxy for Manga Covers
@@ -77,16 +85,18 @@ const chapterImageProxy = createMangadexImageProxy({
 });
 
 // Setting up proxy middlewares
+app.use('/ping', cleanHeaders, mangadexHealthProxy);
+
 app.use('/mangaList', cleanHeaders, jsonCacheMiddleware, mangaListCacheProxy);
-//app.use('/manga', cleanHeaders, mangaSearchProxy);
+
 app.use('/manga', cleanHeaders,jsonCacheMiddleware, mangaSearchCacheProxy);
-//app.use('/covers', cleanHeaders, mangaCoversProxy);
+
 app.use('/covers', cleanHeaders, coverImageCacheMiddleware, mangaCoversProxy);
-//app.use('/at-home', cleanHeaders, chapterMetaDataProxy);
+
 app.use('/at-home', cleanHeaders, jsonCacheMiddleware, chapterMetaDataCacheProxy);
-//app.use('/chapter', cleanHeaders, chapterInfoProxy);
+
 app.use('/chapter', cleanHeaders, jsonCacheMiddleware, chapterInfoCacheProxy);
-//app.use('/chapter-image', cleanHeaders, chapterImageProxy);
+
 app.use('/chapter-image', cleanHeaders, chapterImageCacheMiddleware, chapterImageProxy);
 
 app.listen(PORT, () => {
