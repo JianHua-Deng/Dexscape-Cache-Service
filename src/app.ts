@@ -10,8 +10,23 @@ import { createMangadexImageProxy, createMangadexJsonProxy } from './middleware/
 dotenv.config({ path: './.env' });
 
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const allowedOrigins = ["http://localhost:5173", "http://localhost:3000", "http://localhost:4173", "https://dexscape.vercel.app"]
+
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests from same origin
+    if(!origin) {
+      return callback(null, true);
+    }
+    // Check if origin is allowed
+    if(allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Origin not allowed"));
+    }
+  }
+}));
 
 
 // Middleware to remove/override extra headers
